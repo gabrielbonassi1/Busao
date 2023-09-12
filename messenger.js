@@ -1,40 +1,27 @@
 const axios = require('axios');
 var auth_cookies = [];
-function auth(token) {
-    var url = 'http://api.olhovivo.sptrans.com.br/v2.1/Login/Autenticar?token=' + token;
-    return axios.post(url, {})
+
+async function send(endpoint, data, params) {
+    // Make sure the auth_cookies are available
+
+    var url = 'http://api.olhovivo.sptrans.com.br/v2.1' + endpoint;
+    let auth = await axios.post('http://api.olhovivo.sptrans.com.br/v2.1/Login/Autenticar?token=c2036cfc40b596dfedb5669c7eb9d712dd5b0e5bf1d0196a9e7786200b17c16c', {})
     .then((response) => {
         if(response.headers['set-cookie']) {
             auth_cookies.push(...response.headers['set-cookie']);
         }
-        console.log(response.data)
-    })
-    .catch((error) => {
-        console.error(error);
     });
-};
-
-function send(endpoint, data, params) {
-    // Make sure the auth_cookies are available
     if (auth_cookies.length === 0) {
         console.error('Authentication cookies not available.');
         return;
     }
-
-    var url = 'http://api.olhovivo.sptrans.com.br/v2.1' + endpoint;
-    axios(url, {
+    let response = await axios.get(url, {
         headers: {
             Cookie: auth_cookies.join('; '),
         },
         params: params,
-    })
-    .then((dataResponse) => {
-        console.log(dataResponse.data);
-        return dataResponse.data;
-    })
-    .catch((error) => {
-        console.error(error);
-    });
+        });
+    return response;
 };
 
 async function wait(seconds) {
@@ -49,7 +36,6 @@ async function wait(seconds) {
 };
 
 module.exports ={
-    auth: auth,
     send: send,
     wait: wait,
 };
