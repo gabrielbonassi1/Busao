@@ -17,9 +17,9 @@ const buscarLinha = async(linha) => {
 
 const buscarParada = async(parada) => {
     var params = {
-        termosBusca: parada
+        codigoLinha: parada
     };
-    let response = await send('/Parada/Buscar', null, params, 1);
+    let response = await send('/Parada/BuscarParadasPorLinha', null, params, 1);
     return response.data;
 }
 
